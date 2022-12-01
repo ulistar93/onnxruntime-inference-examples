@@ -13,7 +13,8 @@ def benchmark(model_path):
 
     total = 0.0
     runs = 10
-    input_data = np.zeros((1, 3, 224, 224), np.float32)
+    #input_data = np.zeros((1, 3, 224, 224), np.float32)
+    input_data = np.zeros((1, 1, 320, 320), np.float32)
     # Warming up
     _ = session.run([], {input_name: input_data})
     for i in range(runs):

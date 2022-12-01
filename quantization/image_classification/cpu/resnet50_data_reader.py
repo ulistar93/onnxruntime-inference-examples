@@ -3,7 +3,7 @@ import onnxruntime
 import os
 from onnxruntime.quantization import CalibrationDataReader
 from PIL import Image
-
+import pdb
 
 def _preprocess_images(images_folder: str, height: int, width: int, size_limit=0):
     """
@@ -24,11 +24,15 @@ def _preprocess_images(images_folder: str, height: int, width: int, size_limit=0
     for image_name in batch_filenames:
         image_filepath = images_folder + "/" + image_name
         pillow_img = Image.new("RGB", (width, height))
+        pillow_img = Image.new("L", (width, height))
         pillow_img.paste(Image.open(image_filepath).resize((width, height)))
         input_data = numpy.float32(pillow_img) - numpy.array(
-            [123.68, 116.78, 103.94], dtype=numpy.float32
+            [117.36], dtype=numpy.float32 # 0.299*123.68 + 0.587*116.75 + 0.114*103.94
+            #[123.68, 116.78, 103.94], dtype=numpy.float32
         )
-        nhwc_data = numpy.expand_dims(input_data, axis=0)
+        #nhwc_data = numpy.expand_dims(input_data, axis=0)
+        nhwc_data = numpy.expand_dims(input_data, axis=(0,3))
+        #pdb.set_trace()
         nchw_data = nhwc_data.transpose(0, 3, 1, 2)  # ONNX Runtime standard
         unconcatenated_batch_data.append(nchw_data)
     batch_data = numpy.concatenate(
